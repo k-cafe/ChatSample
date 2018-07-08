@@ -16,11 +16,9 @@ export const helloWorld = functions.https.onRequest((request, response) => {
     // get comments.
     commentReference.once('value')
         .then(snapshots => toComments(snapshots))
-        .then(comments => 
-            comments.filter(comment => {
-                return moment().diff(moment(comment.date)) > dayOfMillSeconds;}))
+        .then(comments =>  lessThan(dayOfMillSeconds, comments))
         .then(comments => {
-            response.send(comments[0].user.name + ' is Over Day ');
+            response.send(comments[0].user.name + ' is Under Day ');
         });
     });
 
@@ -30,4 +28,10 @@ function toComments(snapshots: any): Comment[] {
                 comments.push(new Comment(snapshots.val()[key]).setData(key));
             });
             return comments;
+}
+
+function lessThan(dayOfMSec: number, comments: Comment[]): Comment[] {
+    return comments.filter(comment => { 
+        return moment().diff(moment(comment.date)) < dayOfMSec;
+    });
 }
