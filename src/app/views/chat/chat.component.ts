@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Comment, User } from '../class/chat';
-import { ChatService } from '../service/chat.service';
+import { Comment, User } from '../../models/chat';
+import { ChatService } from '../../repositories/chat.service';
 import { map } from 'rxjs/operators';
 import * as moment from 'moment';
 

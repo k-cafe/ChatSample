@@ -7,7 +7,7 @@ import * as moment from 'moment';
 export class ChatDatePipe implements PipeTransform {
 
   transform(date: number): String {
-    moment.locale("ja");
+    moment.locale('ja');
     return moment(date).format('LLLL');
   }
 
