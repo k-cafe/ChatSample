@@ -31,7 +31,5 @@ function toComments(snapshots: any): Comment[] {
 }
 
 function lessThan(dayOfMSec: number, comments: Comment[]): Comment[] {
-    return comments.filter(comment => { 
-        return moment().diff(moment(comment.date)) < dayOfMSec;
-    });
+    return comments.filter(comment => moment().diff(moment(comment.date)) < dayOfMSec);
 }
