@@ -14,13 +14,17 @@ const dayOfMillSeconds = 1000 * 60 * 60 * 24;
 
 export const helloWorld = functions.https.onRequest((request, response) => {
     // get comments.
-    commentReference.once('value')
-        .then(snapshots => toComments(snapshots))
-        .then(comments =>  lessThan(dayOfMillSeconds, comments))
-        .then(comments => {
-            response.send(comments[0].user.name + ' is Under Day ');
-        });
-    });
+    const filteredComments = getUnoverDayComments()
+                        .then(comments => toCommentId(comments))
+                        .then(commentsId => update(commentsId))
+                        .then(() => { response.send("updated") });
+});
+
+function getUnoverDayComments(): Promise<Comment[]> {
+    return commentReference.once('value')
+                .then(snapshots => toComments(snapshots))
+                .then(comments =>  filterComments(dayOfMillSeconds, comments));
+}
 
 function toComments(snapshots: any): Comment[] {
     const comments: Comment[] = [];
@@ -30,6 +34,18 @@ function toComments(snapshots: any): Comment[] {
             return comments;
 }
 
-function lessThan(dayOfMSec: number, comments: Comment[]): Comment[] {
-    return comments.filter(comment => moment().diff(moment(comment.date)) < dayOfMSec);
+function filterComments(dayOfMSec: number, comments: Comment[]): Comment[] {
+   return comments.filter(comment => moment().diff(moment(comment.date)) < dayOfMSec);
+}
+
+function toCommentId(comments: Comment[]): string[] {
+     return  comments.map(comment => comment.key);
+}
+
+function update(commentsId: string[]) {
+    commentsId.forEach(id => {
+        console.log('update: ' + id);
+        const data = { content: 'fix data' };
+        commentReference.child(id).update(data);
+    });
 }

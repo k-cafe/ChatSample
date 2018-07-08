@@ -13,13 +13,16 @@ const dayOfMillSeconds = 1000 * 60 * 60 * 24;
 // https://firebase.google.com/docs/functions/typescript
 exports.helloWorld = functions.https.onRequest((request, response) => {
     // get comments.
-    commentReference.once('value')
-        .then(snapshots => toComments(snapshots))
-        .then(comments => lessThan(dayOfMillSeconds, comments))
-        .then(comments => {
-        response.send(comments[0].user.name + ' is Under Day ');
-    });
+    const filteredComments = getUnoverDayComments()
+        .then(comments => toCommentId(comments))
+        .then(commentsId => update(commentsId))
+        .then(() => { response.send("updated"); });
 });
+function getUnoverDayComments() {
+    return commentReference.once('value')
+        .then(snapshots => toComments(snapshots))
+        .then(comments => filterComments(dayOfMillSeconds, comments));
+}
 function toComments(snapshots) {
     const comments = [];
     Object.keys(snapshots.val()).forEach(key => {
@@ -27,7 +30,19 @@ function toComments(snapshots) {
     });
     return comments;
 }
-function lessThan(dayOfMSec, comments) {
+function filterComments(dayOfMSec, comments) {
+    console.log(comments[0].user.name + '  is filtered');
     return comments.filter(comment => moment().diff(moment(comment.date)) < dayOfMSec);
+}
+function toCommentId(comments) {
+    console.log('convert to id');
+    return comments.map(comment => comment.key);
+}
+function update(commentsId) {
+    commentsId.forEach(id => {
+        console.log('update: ' + id);
+        const data = { content: 'fix data' };
+        commentReference.child(id).update(data);
+    });
 }
 //# sourceMappingURL=index.js.map
