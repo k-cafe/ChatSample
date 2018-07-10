@@ -1,26 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const functions = require("firebase-functions");
-const admin = require("firebase-admin");
-const comment_1 = require("./models/comment");
+const comment_repository_1 = require("./repositories/comment-repository");
 // init data
-admin.initializeApp();
-const firebase = admin.database();
-const commentReference = firebase.ref('/comments');
+const commentRepository = new comment_repository_1.CommentRepository();
 // Start writing Firebase Functions
 // https://firebase.google.com/docs/functions/typescript
 exports.helloWorld = functions.https.onRequest((request, response) => {
-    // get comments.
-    commentReference.once('value')
-        .then(snapshots => {
-        const comments = [];
-        Object.keys(snapshots.val()).forEach(key => {
-            comments.push(new comment_1.Comment(snapshots.val()[key]).setData(key));
-        });
-        return comments;
-    })
-        .then(comments => {
-        response.send(comments[0].content + ' is message');
-    });
+    // get comments.         
+    commentRepository.list()
+        .then(comments => comments.map(comment => comment.key))
+        .then(ids => commentRepository.update(ids))
+        .catch(err => console.log('error : ' + err));
+    return 0;
 });
 //# sourceMappingURL=index.js.map

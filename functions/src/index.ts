@@ -1,26 +1,17 @@
 import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
-import { Comment } from './models/comment';
+import { CommentRepository } from './repositories/comment-repository';
 
 // init data
-admin.initializeApp();
-const firebase = admin.database();
-const commentReference = firebase.ref('/comments');
+const commentRepository = new CommentRepository()
 
 // Start writing Firebase Functions
 // https://firebase.google.com/docs/functions/typescript
 
 export const helloWorld = functions.https.onRequest((request, response) => {
-    // get comments.
-    commentReference.once('value')
-        .then(snapshots => {
-            const comments: Comment[] = [];
-            Object.keys(snapshots.val()).forEach(key => {
-                comments.push(new Comment(snapshots.val()[key]).setData(key));
-            });
-            return comments;
-        })
-        .then(comments => {
-            response.send(comments[0].content + ' is message');
-        });
-    });
+    // get comments.         
+    commentRepository.list()
+        .then(comments => comments.map(comment => comment.key))
+        .then(ids => commentRepository.update(ids))
+        .catch(err => console.log('error : ' + err));
+    return 0;
+});
