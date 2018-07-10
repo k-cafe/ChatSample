@@ -7,7 +7,7 @@ export class CommentRepository {
         const reference = database.ref('/comments');
         return reference.once('value')
                 .then(snapshots=> {
-                    if(snapshots.exists()) { return this.toComments(snapshots.val()); }
+                    if(snapshots.exists()) { return this.toComments(snapshots); }
                     else { throw new Error('snapshotはありません'); }
                 });
     }
@@ -17,7 +17,9 @@ export class CommentRepository {
         commentsId.forEach(id => {
             console.log('update: ' + id);
             const data = { content: 'fix data' };
-            reference.child(id).update(data);
+            reference.child(id).update(data)
+                .then(() => console.log('update : ' + id))
+                .catch(err => new Error('更新エラー'));
         });
     }
     

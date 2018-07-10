@@ -1,5 +1,5 @@
 import * as admins from 'firebase-admin';
 
-admins.app();
+admins.initializeApp();
 
 export const database = admins.database();
