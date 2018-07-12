@@ -3,24 +3,23 @@ import { Comment } from '../models/comment';
 
 export class CommentRepository {
 
-    list(): Promise<Comment[]> {
+    async list(): Promise<Comment[]> {
         const reference = database.ref('/comments');
-        return reference.once('value')
+        return await reference.once('value')
                 .then(snapshots=> {
                     if(snapshots.exists()) { return this.toComments(snapshots); }
                     else { throw new Error('snapshotはありません'); }
                 });
     }
 
-    update(commentsId: string[]) {
+    update(commentsId: string[]): Promise<boolean> {
         const reference = database.ref('/comments');
-        commentsId.forEach(id => {
-            console.log('update: ' + id);
-            const data = { content: 'fix data' };
-            reference.child(id).update(data)
-                .then(() => console.log('update : ' + id))
-                .catch(err => new Error('更新エラー'));
-        });
+        const data = {}
+        commentsId.forEach(id => { data[`${id}/content`] = 'fix data'; }); 
+    
+        return reference.update(data)
+                .then(() => true)
+                .catch(err => false);
     }
     
     // methods -----------------------------------------------------------------------

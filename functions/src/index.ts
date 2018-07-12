@@ -11,7 +11,7 @@ export const helloWorld = functions.https.onRequest((request, response) => {
     // get comments.         
     commentRepository.list()
         .then(comments => comments.map(comment => comment.key))
-        .then(ids => commentRepository.update(ids))
+        .then(async ids => await commentRepository.update(ids))
         .catch(err => console.log('error : ' + err));
     return 0;
 });
