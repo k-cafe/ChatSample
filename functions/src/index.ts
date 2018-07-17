@@ -7,7 +7,7 @@ const commentRepository = new CommentRepository()
 // Start writing Firebase Functions
 // https://firebase.google.com/docs/functions/typescript
 
-export const helloWorld = functions.https.onRequest((request, response) => {
+export const updateComment = functions.https.onRequest((request, response) => {
     // get comments.         
     commentRepository.list()
         .then(comments => comments.map(comment => comment.key))

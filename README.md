@@ -1,5 +1,25 @@
 # ChatSample
 
+Chatアプリ
+Angular6+Firebaseのサンプル(個人用覚え)
+アーキテクチャがよくないので修正予定
+使うにはsrc/environmentフォルダを作成し、environment.prod.tsおよびenvironment.tsを作成
+上記のファイルには
+```
+export const environment = {
+  production: false,
+  firebase: {
+    apiKey: '',
+    authDomain: '',
+    databaseURL: '',
+    projectId: '',
+    storageBucket: '',
+    messagingSenderId: ''
+  }
+};
+```
+を追加。firebaseの中にはfirebase consoleから取得
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.8.
 
 ## Development server
